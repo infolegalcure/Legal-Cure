@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --primary: #0B3D91;
+    --navy: #082B63;
+    --surface: #F6F8FC;
+    --success: #10B981;
+    --emerald-light: #E6FFFA;
+    --amber-star: #F59E0B;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #F6F8FC;
+    color: #1E293B;
+    margin: 0;
+  }
+}
+
+/* Sleek Interface Custom Utilities */
+.bg-navy {
+  background-color: #082B63;
+}
+.text-navy {
+  color: #082B63;
+}
+.border-navy {
+  border-color: #082B63;
+}
+
+.bg-primary {
+  background-color: #0B3D91;
+}
+.text-primary {
+  color: #0B3D91;
+}
+.border-primary {
+  border-color: #0B3D91;
+}
+
+.bg-surface {
+  background-color: #F6F8FC;
+}
+
+.shadow-sleek {
+  box-shadow: 0 10px 25px -5px rgba(203, 213, 225, 0.5), 0 8px 10px -6px rgba(203, 213, 225, 0.4);
+}
+
+.shadow-sleek-lg {
+  box-shadow: 0 20px 30px -10px rgba(203, 213, 225, 0.6), 0 10px 15px -5px rgba(203, 213, 225, 0.4);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+

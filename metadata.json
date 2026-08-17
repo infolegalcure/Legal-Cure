@@ -1,0 +1,6 @@
+{
+  "name": "LegalCure.in - Bihar Land & Property Professional Marketplace",
+  "description": "Bihar's premier verified marketplace for Deed Writers (Katib), Property Lawyers, Amin Land Surveyors, and Notaries with bilingual English/Hindi interface, instant token booking, and registry office locator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
