@@ -2,8 +2,20 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { BIHAR_DISTRICTS } from '../../constants/biharData';
 import { 
-  UserCheck, ShieldCheck, Check, X, AlertCircle, Search, 
-  MapPin, Building, Eye, ToggleLeft, ToggleRight, FileText
+  UserCheck, 
+  ShieldCheck, 
+  Check, 
+  X, 
+  AlertCircle, 
+  Search, 
+  MapPin, 
+  Building, 
+  Eye, 
+  ToggleLeft, 
+  ToggleRight, 
+  FileText,
+  Sparkles,
+  Layers
 } from 'lucide-react';
 
 interface PendingApplication {
@@ -26,9 +38,9 @@ export const AdminVerificationView: React.FC = () => {
     {
       id: 'app-1',
       name: 'Rajnish Kumar Mishra',
-      category: 'Deed Writer (Katib)',
+      category: 'Deed Writer',
       district: 'Patna',
-      office: 'Patna Sadar Registry Office',
+      office: 'Patna Sadar Registry Office (Shed #11)',
       licenseNumber: 'BR/PAT/DW/2016/910',
       licenseAuthority: 'District Registry Patna',
       experience: 10,
@@ -37,29 +49,32 @@ export const AdminVerificationView: React.FC = () => {
     },
     {
       id: 'app-2',
-      name: 'Advocate Priya Sharma',
-      category: 'Property Lawyer',
-      district: 'Muzaffarpur',
-      office: 'Muzaffarpur Civil Court',
-      licenseNumber: 'BR/BAR/MZP/2018/142',
-      licenseAuthority: 'Bar Council of Bihar',
-      experience: 8,
-      dateApplied: '15 Aug 2026',
-      status: 'Pending'
-    },
-    {
-      id: 'app-3',
       name: 'Amin Deendayal Paswan',
       category: 'Amin / Land Surveyor',
       district: 'Bhagalpur',
-      office: 'Kahalgaon Sub-Registry & Anchal',
+      office: 'Kahalgaon Anchal & Sub-Registry',
       licenseNumber: 'BHR/AMIN/BGP/8821',
       licenseAuthority: 'Revenue Dept Bihar',
       experience: 14,
       dateApplied: '16 Aug 2026',
       status: 'Pending'
+    },
+    {
+      id: 'app-3',
+      name: 'Sunil Kumar Thakur',
+      category: 'Deed Writer',
+      district: 'Muzaffarpur',
+      office: 'Muzaffarpur West Registry Office',
+      licenseNumber: 'BR/MZP/DW/2019/332',
+      licenseAuthority: 'Registration Dept Bihar',
+      experience: 7,
+      dateApplied: '17 Aug 2026',
+      status: 'Pending'
     }
   ]);
+
+  const [activeTab, setActiveTab] = useState<'queue' | 'districts' | 'compliance'>('queue');
+  const [districtSearch, setDistrictSearch] = useState('');
 
   const [districtStatus, setDistrictStatus] = useState<Record<string, boolean>>({
     'Patna': true,
@@ -70,19 +85,19 @@ export const AdminVerificationView: React.FC = () => {
     'Purnia': true,
     'Begusarai': true,
     'Samastipur': true,
-    'Nalanda (Bihar Sharif)': true,
-    'Rohtas (Sasaram)': true,
-    'Saran (Chhapra)': true,
+    'Nalanda': true,
+    'Rohtas': true,
+    'Saran': true,
     'Madhubani': true,
-    'Bhojpur (Ara)': true,
-    'Vaishali (Hajipur)': true,
+    'Bhojpur': true,
+    'Vaishali': true,
     'Siwan': true,
-    'Motihari (East Champaran)': true
+    'East Champaran': true
   });
 
   const handleApprove = (id: string, name: string) => {
     setApplications(prev => prev.map(a => a.id === id ? { ...a, status: 'Approved' } : a));
-    showToast(`Approved ${name}! License verification badge issued.`, 'success');
+    showToast(`Approved ${name}! License verification badge granted.`, 'success');
   };
 
   const handleReject = (id: string, name: string) => {
@@ -95,151 +110,177 @@ export const AdminVerificationView: React.FC = () => {
       ...prev,
       [dName]: !prev[dName]
     }));
-    showToast(`Updated marketplace coverage for ${dName}`, 'info');
+    showToast(`Updated marketplace status for ${dName}`, 'info');
   };
 
   return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 space-y-8">
+    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200">
+      {/* Title Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
         <div>
-          <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-            LegalCure Admin Portal
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-navy mt-1 tracking-tight">
-            {lang === 'hi' ? 'विशेषज्ञ सत्यापन व जिला प्रबंधन' : 'Professional Verification & District Management'}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+              Admin Compliance Portal
+            </span>
+            <span className="text-xs text-gray-400">•</span>
+            <span className="text-xs font-bold text-gray-600">Phase 1: Deed Writer & Amin Focus</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#082B63] mt-1 tracking-tight">
+            {lang === 'hi' ? 'प्रशासनिक सत्यापन एवं अनुपालन' : 'Professional Verification & Compliance'}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Review government licenses, Bar Council credentials, and manage active Bihar registry offices.
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Review government registration licenses, physical shed allocations, and 38-district coverage.
           </p>
         </div>
-      </div>
 
-      {/* Section 1: Verification Queue Data Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-primary" />
-            <h3 className="text-base font-extrabold text-navy">
-              Pending Professional License Applications ({applications.filter(a => a.status === 'Pending').length})
-            </h3>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
-              <tr>
-                <th className="px-5 py-3">Professional Name</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">District & Office</th>
-                <th className="px-4 py-3">License & Authority</th>
-                <th className="px-4 py-3">Exp</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-5 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-              {applications.map((app) => (
-                <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="px-5 py-4">
-                    <div className="font-bold text-navy text-sm">{app.name}</div>
-                    <span className="text-[10px] text-slate-400">Applied on {app.dateApplied}</span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className="font-semibold text-primary">{app.category}</span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div>{app.district}</div>
-                    <span className="text-[10px] text-slate-400">{app.office}</span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="font-bold text-slate-800">{app.licenseNumber}</div>
-                    <span className="text-[10px] text-slate-400">{app.licenseAuthority}</span>
-                  </td>
-                  <td className="px-4 py-4 font-semibold">{app.experience} Yrs</td>
-                  <td className="px-4 py-4">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      app.status === 'Approved'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : app.status === 'Rejected'
-                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                        : 'bg-amber-50 text-amber-700 border border-amber-200'
-                    }`}>
-                      {app.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    {app.status === 'Pending' ? (
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleApprove(app.id, app.name)}
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 transition-colors shadow-2xs"
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleReject(app.id, app.name)}
-                          className="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 transition-colors"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                          Reject
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-slate-400 text-xs italic">Completed</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-gray-700 bg-white px-3 py-1.5 rounded-xl border border-gray-200">
+            Escrow Status: <strong className="text-emerald-700">₹100 Safe Hold Active</strong>
+          </span>
         </div>
       </div>
 
-      {/* Section 2: Activate/Deactivate Bihar Districts & Coverage (Requirement #8) */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div>
-            <h3 className="text-base font-extrabold text-navy">
-              Bihar Districts & Registry Coverage Controller
-            </h3>
-            <p className="text-xs text-slate-500">
-              Toggle marketplace availability across Bihar's 38 administrative districts.
-            </p>
+      {/* 3 Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-xs text-gray-500 font-bold uppercase">Pending Verification</span>
+          <div className="text-2xl font-black text-amber-600 mt-1">
+            {applications.filter(a => a.status === 'Pending').length} Professionals
           </div>
+          <p className="text-[11px] text-gray-400 mt-1">Awaiting Registration Dept KYC</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {BIHAR_DISTRICTS.map((d) => {
-            const isActive = districtStatus[d.name] !== false;
-            return (
-              <div
-                key={d.name}
-                className={`p-3 rounded-xl border flex items-center justify-between transition-all ${
-                  isActive ? 'bg-slate-50 border-slate-200' : 'bg-slate-100 border-slate-200 opacity-60'
-                }`}
-              >
-                <div>
-                  <div className="font-bold text-xs text-navy">{d.name}</div>
-                  <div className="text-[10px] text-slate-400">{d.registryOffices.length} Sub-Registries</div>
+        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-xs text-gray-500 font-bold uppercase">Active Bihar Districts</span>
+          <div className="text-2xl font-black text-[#082B63] mt-1">
+            38 / 38 Districts
+          </div>
+          <p className="text-[11px] text-gray-400 mt-1">100% Bihar Coverage Enabled</p>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
+          <span className="text-xs text-gray-500 font-bold uppercase">Phase 1 Active Categories</span>
+          <div className="text-2xl font-black text-emerald-700 mt-1">
+            2 Active (Deed Writer & Amin)
+          </div>
+          <p className="text-[11px] text-gray-400 mt-1">Lawyer & Notary in Phase 2</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 mb-6 text-xs font-bold">
+        <button
+          onClick={() => setActiveTab('queue')}
+          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+            activeTab === 'queue' 
+              ? 'border-[#082B63] text-[#082B63]' 
+              : 'border-transparent text-gray-500 hover:text-gray-900'
+          }`}
+        >
+          <UserCheck className="w-4 h-4" />
+          <span>Verification Queue ({applications.filter(a => a.status === 'Pending').length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('districts')}
+          className={`pb-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+            activeTab === 'districts' 
+              ? 'border-[#082B63] text-[#082B63]' 
+              : 'border-transparent text-gray-500 hover:text-gray-900'
+          }`}
+        >
+          <MapPin className="w-4 h-4" />
+          <span>38 Districts Coverage Status</span>
+        </button>
+      </div>
+
+      {activeTab === 'queue' && (
+        <div className="space-y-4">
+          {applications.map((app) => (
+            <div key={app.id} className="bg-white rounded-2xl p-5 border border-gray-200 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs">
+              <div className="space-y-1.5 flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-[#082B63]">{app.name}</h3>
+                  <span className="bg-blue-50 text-[#0B3D91] font-bold text-[10px] px-2 py-0.5 rounded-full border border-blue-200">
+                    {app.category}
+                  </span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    app.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' :
+                    app.status === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                  }`}>
+                    {app.status}
+                  </span>
                 </div>
 
-                <button
-                  onClick={() => toggleDistrict(d.name)}
-                  className={`text-xs font-bold px-2.5 py-1 rounded-lg transition-colors ${
-                    isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
-                  }`}
-                >
-                  {isActive ? 'Active' : 'Paused'}
-                </button>
+                <div className="text-gray-600 flex flex-wrap items-center gap-3 text-[11px]">
+                  <span><strong>License:</strong> {app.licenseNumber}</span>
+                  <span>•</span>
+                  <span><strong>Authority:</strong> {app.licenseAuthority}</span>
+                  <span>•</span>
+                  <span><strong>Experience:</strong> {app.experience} Years</span>
+                </div>
+
+                <div className="text-gray-500 text-[11px]">
+                  Office / Shed: <strong>{app.office}</strong> ({app.district})
+                </div>
               </div>
-            );
-          })}
+
+              {app.status === 'Pending' && (
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleApprove(app.id, app.name)}
+                    className="bg-[#10B981] hover:bg-emerald-600 text-slate-950 font-bold px-3.5 py-2 rounded-xl flex items-center gap-1 transition-colors"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Approve & Verify</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleReject(app.id, app.name)}
+                    className="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold px-3.5 py-2 rounded-xl flex items-center gap-1 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span>Reject</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-      </div>
+      )}
+
+      {activeTab === 'districts' && (
+        <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xs">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-[#082B63]">Bihar District Registry Activation</h3>
+            <input
+              type="text"
+              placeholder="Search district..."
+              value={districtSearch}
+              onChange={(e) => setDistrictSearch(e.target.value)}
+              className="text-xs px-3 py-1.5 rounded-xl border border-gray-300 w-48"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-xs">
+            {BIHAR_DISTRICTS.filter(d => d.name.toLowerCase().includes(districtSearch.toLowerCase())).map((d) => (
+              <div 
+                key={d.name} 
+                className="p-3 bg-slate-50 rounded-xl border border-gray-200 flex items-center justify-between"
+              >
+                <div>
+                  <div className="font-bold text-gray-900">{d.name}</div>
+                  <div className="text-[10px] text-gray-500">{d.registryOffices.length} Sub-Registries</div>
+                </div>
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  ACTIVE
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
     </div>
   );

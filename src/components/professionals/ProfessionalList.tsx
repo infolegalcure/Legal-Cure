@@ -1,8 +1,9 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { ProfessionalCard } from './ProfessionalCard';
-import { BIHAR_DISTRICTS } from '../../constants/biharData';
-import { Search, Filter, RotateCcw, SlidersHorizontal, UserCheck, ShieldCheck, MapPin } from 'lucide-react';
+import { BIHAR_DISTRICTS, PROFESSIONAL_TYPES } from '../../constants/biharData';
+import { sortAlphabetically } from '../../utils/sorting';
+import { Search, Filter, RotateCcw, SlidersHorizontal, UserCheck, ShieldCheck, MapPin, Building, X } from 'lucide-react';
 
 export const ProfessionalList: React.FC = () => {
   const { 
@@ -10,6 +11,8 @@ export const ProfessionalList: React.FC = () => {
     filters, 
     updateFilter, 
     resetFilters, 
+    activeSearchQuery,
+    setActiveSearchQuery,
     professionals, 
     loadingPros,
     t,
@@ -17,13 +20,15 @@ export const ProfessionalList: React.FC = () => {
     setIsStampCalcOpen
   } = useApp();
 
+  const sortedDistricts = sortAlphabetically(BIHAR_DISTRICTS, d => d.name);
+
   return (
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6">
       
       {/* Header & Breadcrumb */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-navy tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#082B63] tracking-tight">
             {lang === 'hi' ? 'बिहार के प्रमाणित जमीन व रजिस्ट्री विशेषज्ञ' : 'Verified Land & Property Professionals in Bihar'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -36,18 +41,57 @@ export const ProfessionalList: React.FC = () => {
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setIsHelpMeChooseOpen(true)}
-            className="text-xs font-bold text-primary bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-xl transition-all shadow-2xs"
+            className="text-xs font-bold text-[#0B3D91] bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-xl transition-all shadow-2xs cursor-pointer"
           >
             {lang === 'hi' ? '🤔 किसे चुनें? (गाइड)' : '🤔 Help Me Choose Wizard'}
           </button>
           <button
             onClick={() => setIsStampCalcOpen(true)}
-            className="text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3.5 py-2 rounded-xl transition-all shadow-2xs"
+            className="text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3.5 py-2 rounded-xl transition-all shadow-2xs cursor-pointer"
           >
             {lang === 'hi' ? '📑 स्टाम्प ड्यूटी गणना' : '📑 Stamp Duty Calc'}
           </button>
         </div>
       </div>
+
+      {/* Active 3-Level Search Query Banner */}
+      {activeSearchQuery && (
+        <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#0B3D91] text-white flex items-center justify-center shrink-0">
+              <Search className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-[11px] font-bold text-blue-800 uppercase tracking-wider">
+                {t('search_active_query')}
+              </div>
+              <div className="text-sm font-bold text-[#082B63] flex flex-wrap items-center gap-1.5 mt-0.5">
+                <span className="bg-white px-2.5 py-0.5 rounded-md border border-blue-200 text-[#0B3D91]">
+                  {activeSearchQuery.professionalType}
+                </span>
+                <span className="text-slate-400 font-normal">{t('in_district')}</span>
+                <span className="bg-white px-2.5 py-0.5 rounded-md border border-blue-200 text-[#082B63] flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-red-500" />
+                  {activeSearchQuery.district}
+                </span>
+                <span className="text-slate-400 font-normal">•</span>
+                <span className="bg-white px-2.5 py-0.5 rounded-md border border-blue-200 text-slate-700 flex items-center gap-1">
+                  <Building className="w-3 h-3 text-blue-600" />
+                  {activeSearchQuery.location}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={resetFilters}
+            className="text-xs font-bold text-[#0B3D91] hover:text-[#082B63] bg-white hover:bg-blue-50 border border-blue-200 px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5 self-start sm:self-center shrink-0 shadow-2xs"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>{t('change_search')}</span>
+          </button>
+        </div>
+      )}
 
       {/* Main Filter Bar */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 mb-8 shadow-xl shadow-gray-200/50">
@@ -86,7 +130,7 @@ export const ProfessionalList: React.FC = () => {
             <button
               onClick={resetFilters}
               title="Reset all filters"
-              className="p-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-100 text-gray-600 rounded-xl transition-colors shrink-0"
+              className="p-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-100 text-gray-600 rounded-xl transition-colors shrink-0 cursor-pointer"
               aria-label="Reset filters"
             >
               <RotateCcw className="w-4 h-4" />
@@ -94,7 +138,7 @@ export const ProfessionalList: React.FC = () => {
           </div>
         </div>
 
-        {/* Filter Pills / Selects */}
+        {/* Filter Selects */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 pt-3 border-t border-gray-100 text-xs">
           
           {/* Category */}
@@ -109,11 +153,10 @@ export const ProfessionalList: React.FC = () => {
               id="filter-category"
             >
               <option value="All">{lang === 'hi' ? 'सभी श्रेणियां' : 'All Categories'}</option>
-              <option value="Deed Writer">{lang === 'hi' ? 'कातिब / दस्तावेज लेखक' : 'Deed Writer (Katib)'}</option>
-              <option value="Lawyer">{lang === 'hi' ? 'जमीन व राजस्व वकील' : 'Property Lawyer'}</option>
               <option value="Amin / Land Surveyor">{lang === 'hi' ? 'अमीन (भूमि नापी)' : 'Amin / Land Surveyor'}</option>
-              <option value="Notary">{lang === 'hi' ? 'नोटरी पब्लिक' : 'Notary Public'}</option>
-              <option value="Document Checker">{lang === 'hi' ? 'दाखिल खारिज व खतियान जांच' : 'Document Checker'}</option>
+              <option value="Deed Writer">{lang === 'hi' ? 'कातिब / दस्तावेज लेखक' : 'Deed Writer'}</option>
+              <option value="Lawyer">{lang === 'hi' ? 'जमीन व राजस्व वकील' : 'Lawyer'}</option>
+              <option value="Notary">{lang === 'hi' ? 'नोटरी पब्लिक' : 'Notary'}</option>
             </select>
           </div>
 
@@ -129,7 +172,7 @@ export const ProfessionalList: React.FC = () => {
               id="filter-district"
             >
               <option value="All">{lang === 'hi' ? 'सभी 38 जिले' : 'All 38 Districts'}</option>
-              {BIHAR_DISTRICTS.map(d => (
+              {sortedDistricts.map(d => (
                 <option key={d.name} value={d.name}>
                   {d.name} ({d.nameHi})
                 </option>
@@ -181,19 +224,25 @@ export const ProfessionalList: React.FC = () => {
 
       {/* Results Count & Active Filter Tags */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-extrabold text-navy">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-extrabold text-[#082B63]">
             {professionals.length} {lang === 'hi' ? 'प्रमाणित विशेषज्ञ उपलब्ध' : 'Verified Professionals Available'}
           </span>
           {filters.district && filters.district !== 'All' && (
-            <span className="bg-blue-100 text-primary text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+            <span className="bg-blue-100 text-[#0B3D91] text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <MapPin className="w-3 h-3" />
               {filters.district}
             </span>
           )}
           {filters.category && filters.category !== 'All' && (
-            <span className="bg-navy text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+            <span className="bg-[#082B63] text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
               {filters.category}
+            </span>
+          )}
+          {filters.location && filters.location !== 'All' && filters.location.trim() !== '' && (
+            <span className="bg-amber-100 text-amber-900 text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <Building className="w-3 h-3" />
+              {filters.location}
             </span>
           )}
         </div>
@@ -227,22 +276,22 @@ export const ProfessionalList: React.FC = () => {
         </div>
       ) : professionals.length === 0 ? (
         <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-lg mx-auto shadow-xs">
-          <div className="w-16 h-16 bg-blue-50 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-blue-50 text-[#0B3D91] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Search className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-navy mb-2">
-            {lang === 'hi' ? 'कोई विशेषज्ञ नहीं मिला' : 'No Professionals Found'}
+          <h3 className="text-lg font-bold text-[#082B63] mb-2">
+            {t('no_results')}
           </h3>
           <p className="text-xs text-slate-500 mb-6">
             {lang === 'hi'
-              ? 'कृपया अपने चुने हुए फिल्टर (जिला या श्रेणी) को बदलें या रीसेट करें।'
-              : 'Try clearing some filters or searching for another district or category.'}
+              ? 'कृपया अपने चुने हुए फिल्टर (जिला, श्रेणी या स्थान) को बदलें या रीसेट करें।'
+              : 'Try clearing some filters or searching for another district or office location.'}
           </p>
           <button
             onClick={resetFilters}
-            className="bg-primary hover:bg-navy text-white px-6 py-2.5 rounded-full text-xs font-bold transition-all shadow-md"
+            className="bg-[#0B3D91] hover:bg-[#082B63] text-white px-6 py-2.5 rounded-full text-xs font-bold transition-all shadow-md cursor-pointer"
           >
-            {lang === 'hi' ? 'सभी फिल्टर रीसेट करें' : 'Reset All Filters'}
+            {t('change_search')}
           </button>
         </div>
       ) : (

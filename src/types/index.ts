@@ -9,6 +9,22 @@ export type ProfessionalCategory =
 
 export type OfficeType = 'Registry Office' | 'Block Office' | 'Civil Court' | 'Independent Chamber';
 
+export type UserRole = 'customer' | 'professional' | 'admin';
+
+export type BookingStatus = 
+  | 'BOOKING_REQUESTED'
+  | 'PENDING_PROFESSIONAL'
+  | 'TIME_CHANGE_REQUESTED'
+  | 'CONFIRMED'
+  | 'Confirmed'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'Completed'
+  | 'REJECTED'
+  | 'CANCELLED'
+  | 'Cancelled'
+  | 'Rescheduled';
+
 export interface Review {
   id: string;
   userName: string;
@@ -69,6 +85,8 @@ export interface Booking {
   serviceSelected: string;
   appointmentDate: string;
   appointmentTime: string;
+  suggestedDate?: string;
+  suggestedTime?: string;
   plotDetails?: {
     khataNumber?: string;
     khesraNumber?: string;
@@ -79,11 +97,53 @@ export interface Booking {
   professionalFee: number;
   tokenPaid: number;
   remainingAtOffice: number;
-  status: 'Confirmed' | 'Completed' | 'Rescheduled' | 'Cancelled';
+  status: BookingStatus;
   paymentMethod: 'UPI' | 'Card' | 'NetBanking';
   transactionId: string;
   createdAt: string;
   notes?: string;
+}
+
+export interface ContactUnlock {
+  id: string;
+  userId: string;
+  professionalId: string;
+  professionalName: string;
+  professionalPhone: string;
+  officeAddress: string;
+  unlockedAt: string;
+  tokenPaid: number;
+}
+
+export interface Lead {
+  id: string;
+  clientName: string;
+  clientPhone: string;
+  serviceType: string;
+  district: string;
+  createdAt: string;
+  message?: string;
+}
+
+export interface WhatsAppMessage {
+  id: string;
+  templateKey: string;
+  recipientPhone: string;
+  recipientRole: string;
+  messageBody: string;
+  sentAt: string;
+  bookingNumber?: string;
+}
+
+export interface UserAccount {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: UserRole;
+  district?: string;
+  location?: string;
+  licenseNumber?: string;
 }
 
 export interface DistrictInfo {
@@ -92,6 +152,15 @@ export interface DistrictInfo {
   division: string;
   registryOffices: string[];
   blocks: string[];
+  courts: string[];
+  notaryZones: string[];
+}
+
+export interface SearchQueryObject {
+  professionalType: string;
+  district: string;
+  location: string;
+  timestamp?: number;
 }
 
 export interface StampDutyCalcResult {
