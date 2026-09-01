@@ -14,7 +14,12 @@ import {
 } from 'lucide-react';
 
 export const ForProfessionalsView: React.FC = () => {
-  const { lang, openAuthModal, showToast } = useApp();
+  const { lang, openAuthModal, setActiveView } = useApp();
+
+  const handleRegisterClick = () => {
+    setActiveView('pro_register');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const benefits = [
     {
@@ -68,7 +73,7 @@ export const ForProfessionalsView: React.FC = () => {
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
             <button
-              onClick={() => openAuthModal('signup')}
+              onClick={handleRegisterClick}
               className="bg-[#10B981] hover:bg-emerald-600 text-slate-950 font-bold px-6 py-3 rounded-full text-xs transition-all shadow-md flex items-center gap-2"
             >
               <span>{lang === 'hi' ? 'पेशेवर के रूप में पंजीकरण करें' : 'Register as Professional'}</span>
@@ -136,7 +141,7 @@ export const ForProfessionalsView: React.FC = () => {
 
         <div className="mt-6 text-center">
           <button
-            onClick={() => openAuthModal('signup')}
+            onClick={handleRegisterClick}
             className="bg-[#082B63] hover:bg-[#0B3D91] text-white px-8 py-3 rounded-full text-xs font-bold shadow-md transition-all"
           >
             {lang === 'hi' ? 'अभी आवेदन करें (Free Onboarding)' : 'Apply for Free Verification'}

@@ -1,37 +1,31 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, ShieldCheck, User, Briefcase, Key, Mail, Phone, ArrowRight, CheckCircle2, Sparkles, AlertCircle } from 'lucide-react';
+import { X, ShieldCheck, Briefcase, Key, Mail, Phone, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { UserRole } from '../../types';
+import legalcureLogo from '../../assets/images/legalcure_logo_1786984287741.jpg';
 
 export const AuthModal: React.FC = () => {
   const { 
     isAuthModalOpen, 
     authModalTab, 
     closeAuthModal, 
-    openAuthModal, 
     loginUser, 
-    signupUser,
     switchRole,
+    setActiveView,
     lang 
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'login' | 'signup' | 'forgot'>(authModalTab);
-  const [role, setRole] = useState<UserRole>('customer');
+  const [activeTab, setActiveTab] = useState<'login' | 'forgot'>('login');
   
   // Form fields
   const [email, setEmail] = useState('vivek.patna@gmail.com');
   const [password, setPassword] = useState('password123');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [district, setDistrict] = useState('Patna');
-  const [location, setLocation] = useState('Patna Sadar');
-  const [licenseNumber, setLicenseNumber] = useState('');
   
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   React.useEffect(() => {
-    setActiveTab(authModalTab);
+    setActiveTab(authModalTab === 'forgot' ? 'forgot' : 'login');
     setError(null);
     setSuccessMsg(null);
   }, [authModalTab]);
@@ -51,33 +45,15 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  const handleSignupSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    if (!name || !phone || !email || !password) {
-      setError('Please fill in all required fields.');
-      return;
-    }
-
-    try {
-      await signupUser({
-        name,
-        email,
-        phone,
-        role,
-        district,
-        location,
-        licenseNumber: role === 'professional' ? licenseNumber : undefined
-      });
-      closeAuthModal();
-    } catch (err: any) {
-      setError(err.message || 'Signup failed');
-    }
-  };
-
   const handleQuickLogin = (targetRole: UserRole) => {
     switchRole(targetRole);
     closeAuthModal();
+  };
+
+  const handleGoToProRegister = () => {
+    closeAuthModal();
+    setActiveView('pro_register');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -95,10 +71,15 @@ export const AuthModal: React.FC = () => {
             <X className="w-5 h-5" />
           </button>
 
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-8 h-8 rounded-lg bg-[#0B3D91] flex items-center justify-center font-bold text-white text-sm">
-              LC
-            </span>
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-8 h-8 rounded-lg overflow-hidden border border-amber-400/40 bg-[#05162e] shrink-0 flex items-center justify-center">
+              <img 
+                src={legalcureLogo} 
+                alt="LegalCure" 
+                className="w-full h-full object-cover" 
+                referrerPolicy="no-referrer" 
+              />
+            </div>
             <span className="text-xs font-bold uppercase tracking-wider text-blue-200">
               LegalCure.in Account
             </span>
@@ -106,7 +87,6 @@ export const AuthModal: React.FC = () => {
 
           <h3 className="text-xl font-extrabold text-white">
             {activeTab === 'login' && (lang === 'hi' ? 'लीगलक्योर में लॉगिन करें' : 'Sign in to LegalCure')}
-            {activeTab === 'signup' && (lang === 'hi' ? 'नया खाता बनाएं' : 'Create an Account')}
             {activeTab === 'forgot' && (lang === 'hi' ? 'पासवर्ड रीसेट' : 'Reset Password')}
           </h3>
           <p className="text-xs text-blue-200/80 mt-1">
@@ -139,30 +119,6 @@ export const AuthModal: React.FC = () => {
               Admin
             </button>
           </div>
-        </div>
-
-        {/* Tab Toggle */}
-        <div className="flex border-b border-gray-100 text-xs font-bold">
-          <button
-            onClick={() => { setActiveTab('login'); setError(null); }}
-            className={`flex-1 py-3 text-center transition-colors border-b-2 ${
-              activeTab === 'login' 
-                ? 'border-[#082B63] text-[#082B63] bg-white' 
-                : 'border-transparent text-gray-500 hover:text-gray-900 bg-gray-50'
-            }`}
-          >
-            {lang === 'hi' ? 'लॉगिन' : 'Log In'}
-          </button>
-          <button
-            onClick={() => { setActiveTab('signup'); setError(null); }}
-            className={`flex-1 py-3 text-center transition-colors border-b-2 ${
-              activeTab === 'signup' 
-                ? 'border-[#082B63] text-[#082B63] bg-white' 
-                : 'border-transparent text-gray-500 hover:text-gray-900 bg-gray-50'
-            }`}
-          >
-            {lang === 'hi' ? 'पंजीकरण (Sign Up)' : 'Sign Up'}
-          </button>
         </div>
 
         {/* Body */}
@@ -224,112 +180,21 @@ export const AuthModal: React.FC = () => {
                 <span>{lang === 'hi' ? 'लॉगिन करें' : 'Sign In'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-            </form>
-          )}
 
-          {activeTab === 'signup' && (
-            <form onSubmit={handleSignupSubmit} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">I want to register as:</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setRole('customer')}
-                    className={`py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
-                      role === 'customer' 
-                        ? 'border-[#082B63] bg-blue-50 text-[#082B63]' 
-                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <User className="w-3.5 h-3.5" />
-                    <span>Client / Buyer</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRole('professional')}
-                    className={`py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
-                      role === 'professional' 
-                        ? 'border-[#082B63] bg-blue-50 text-[#082B63]' 
-                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Briefcase className="w-3.5 h-3.5" />
-                    <span>Katib / Amin Pro</span>
-                  </button>
-                </div>
+              {/* Link to Professional Registration */}
+              <div className="pt-3 border-t border-gray-100 text-center">
+                <p className="text-xs text-gray-600 mb-2">
+                  {lang === 'hi' ? 'क्या आप कातिब या अमीन हैं?' : 'Are you a Deed Writer or Amin?'}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleGoToProRegister}
+                  className="w-full py-2.5 px-3 border border-[#082B63] text-[#082B63] hover:bg-blue-50/70 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  <Briefcase className="w-4 h-4 text-[#0B3D91]" />
+                  <span>{lang === 'hi' ? 'प्रोफेशनल रजिस्ट्रेशन करें' : 'Register as Professional'}</span>
+                </button>
               </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Ramesh Kumar Verma"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full text-xs font-medium px-3.5 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-[#082B63]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Mobile (WhatsApp)</label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="10-digit number"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full text-xs font-medium px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-[#082B63]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Email</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="name@gmail.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full text-xs font-medium px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-[#082B63]"
-                  />
-                </div>
-              </div>
-
-              {role === 'professional' && (
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">
-                    Registration / License / Amin Certificate No.
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. DW/BHR/PAT/2016/049"
-                    value={licenseNumber}
-                    onChange={(e) => setLicenseNumber(e.target.value)}
-                    className="w-full text-xs font-medium px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-[#082B63]"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Set Password</label>
-                <input
-                  type="password"
-                  required
-                  placeholder="At least 6 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full text-xs font-medium px-3.5 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-[#082B63]"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-[#082B63] hover:bg-[#0B3D91] text-white font-bold py-3 rounded-xl text-xs transition-all shadow-md mt-2"
-              >
-                {lang === 'hi' ? 'खाता बनाएं एवं जारी रखें' : 'Create Account & Continue'}
-              </button>
             </form>
           )}
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { X, MessageSquare, CheckCheck, Clock, ExternalLink, RefreshCw, Smartphone, Send } from 'lucide-react';
+import legalcureLogo from '../../assets/images/legalcure_logo_1786984287741.jpg';
 
 export const WhatsAppDrawer: React.FC = () => {
   const { 
@@ -19,8 +20,13 @@ export const WhatsAppDrawer: React.FC = () => {
         {/* WhatsApp Top Header Bar */}
         <div className="bg-[#082B63] p-4 flex items-center justify-between border-b border-blue-900 shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#10B981] text-slate-900 flex items-center justify-center font-black text-sm">
-              LC
+            <div className="w-10 h-10 rounded-xl overflow-hidden border border-amber-400/40 bg-[#05162e] shrink-0 flex items-center justify-center">
+              <img 
+                src={legalcureLogo} 
+                alt="LegalCure Logo" 
+                className="w-full h-full object-cover" 
+                referrerPolicy="no-referrer" 
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">

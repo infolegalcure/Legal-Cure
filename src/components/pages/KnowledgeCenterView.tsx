@@ -3,7 +3,6 @@ import { useApp } from '../../context/AppContext';
 import { 
   BookOpen, 
   FileText, 
-  Calculator, 
   ExternalLink, 
   HelpCircle, 
   CheckCircle2, 
@@ -13,7 +12,7 @@ import {
 } from 'lucide-react';
 
 export const KnowledgeCenterView: React.FC = () => {
-  const { lang, setIsStampCalcOpen, setActiveView } = useApp();
+  const { lang, setActiveView } = useApp();
 
   const [calcKatha, setCalcKatha] = useState<number>(2);
   const [laggiHand, setLaggiHand] = useState<number>(5.5); // Standard Laggi in Bihar (5.5 hands or 6 hands)
@@ -86,21 +85,13 @@ export const KnowledgeCenterView: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 uppercase tracking-wider">
-              <Calculator className="w-4 h-4 text-emerald-600" />
-              <span>Bihar Unit Converter</span>
+              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <span>Bihar Unit Converter (कट्ठा / डिसमिल)</span>
             </div>
             <h2 className="text-xl font-bold text-[#082B63] mt-1">
-              {lang === 'hi' ? 'कट्ठा से डिसमिल एवं वर्गफीट रूपांतरण' : 'Katha to Decimal & Sq.Ft Calculator'}
+              {lang === 'hi' ? 'कट्ठा से डिसमिल एवं वर्गफीट रूपांतरण' : 'Katha to Decimal & Sq.Ft Standard Conversion'}
             </h2>
           </div>
-          
-          <button
-            onClick={() => setIsStampCalcOpen(true)}
-            className="bg-[#082B63] hover:bg-[#0B3D91] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 self-start sm:self-auto"
-          >
-            <span>Open Stamp Duty Calc</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">

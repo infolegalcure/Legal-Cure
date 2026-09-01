@@ -22,6 +22,8 @@ import { TrustFeatures } from './components/home/TrustFeatures';
 import { HowItWorksView } from './components/pages/HowItWorksView';
 import { ForProfessionalsView } from './components/pages/ForProfessionalsView';
 import { KnowledgeCenterView } from './components/pages/KnowledgeCenterView';
+import { SupportView } from './components/pages/SupportView';
+import { ProfessionalRegistrationWizard } from './components/pages/ProfessionalRegistrationWizard';
 
 // Professional & Booking components
 import { ProfessionalList } from './components/professionals/ProfessionalList';
@@ -29,7 +31,6 @@ import { ProfessionalCard } from './components/professionals/ProfessionalCard';
 import { ProfessionalProfileModal } from './components/professionals/ProfessionalProfileModal';
 import { BookingModal } from './components/booking/BookingModal';
 import { HelpMeChooseModal } from './components/wizard/HelpMeChooseModal';
-import { BiharStampDutyCalculatorModal } from './components/calculator/BiharStampDutyCalculatorModal';
 
 // Dashboard views
 import { UserBookingsView } from './components/dashboard/UserBookingsView';
@@ -112,11 +113,13 @@ const MainContent: React.FC = () => {
         )}
 
         {activeView === 'professionals' && <ProfessionalList />}
-        {activeView === 'how-it-works' && <HowItWorksView />}
-        {activeView === 'for-professionals' && <ForProfessionalsView />}
-        {activeView === 'knowledge-center' && <KnowledgeCenterView />}
+        {(activeView === 'how_it_works' || (activeView as string) === 'how-it-works') && <HowItWorksView />}
+        {(activeView === 'for_professionals' || (activeView as string) === 'for-professionals') && <ForProfessionalsView />}
+        {(activeView === 'pro_register' || (activeView as string) === 'for-professionals/register') && <ProfessionalRegistrationWizard />}
+        {(activeView === 'knowledge_center' || (activeView as string) === 'knowledge-center') && <KnowledgeCenterView />}
+        {activeView === 'support' && <SupportView />}
         {activeView === 'bookings' && <UserBookingsView />}
-        {activeView === 'pro-dashboard' && <ProfessionalDashboardView />}
+        {(activeView === 'pro_dashboard' || (activeView as string) === 'pro-dashboard') && <ProfessionalDashboardView />}
         {activeView === 'admin' && <AdminVerificationView />}
       </main>
 
@@ -127,7 +130,6 @@ const MainContent: React.FC = () => {
       <ProfessionalProfileModal />
       <BookingModal />
       <HelpMeChooseModal />
-      <BiharStampDutyCalculatorModal />
       <AuthModal />
       <SeoAuditModal />
       <WhatsAppDrawer />

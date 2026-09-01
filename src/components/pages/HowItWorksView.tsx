@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const HowItWorksView: React.FC = () => {
-  const { lang, setActiveView, updateFilter, setIsStampCalcOpen } = useApp();
+  const { lang, setActiveView, updateFilter } = useApp();
 
   const steps = [
     {

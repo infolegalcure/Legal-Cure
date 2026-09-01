@@ -5,7 +5,7 @@ export interface ProfessionalTypeOption {
   name: string;
   nameHi: string;
   category: 'Amin / Land Surveyor' | 'Deed Writer' | 'Lawyer' | 'Notary';
-  isPhase1Active: boolean;
+  active: boolean;
   locationLabelEn: string;
   locationLabelHi: string;
   locationPlaceholderEn: string;
@@ -15,11 +15,13 @@ export interface ProfessionalTypeOption {
 }
 
 /**
- * Professional Categories:
- * Phase 1 Active Categories ONLY:
- * 1. Deed Writer
- * 2. Amin / Land Surveyor
- * (Lawyer and Notary preserved in architecture for future Phase 2 expansion)
+ * Phase 1 Active Professional Categories in STRICT Alphabetical Order:
+ * 1. Amin / Land Surveyor (active: true)
+ * 2. Deed Writer (active: true)
+ * 
+ * Inactive/Future categories:
+ * - Lawyer (active: false)
+ * - Notary (active: false)
  */
 export const PROFESSIONAL_TYPES: ProfessionalTypeOption[] = [
   {
@@ -27,7 +29,7 @@ export const PROFESSIONAL_TYPES: ProfessionalTypeOption[] = [
     name: 'Amin / Land Surveyor',
     nameHi: 'अमीन / भूमि सर्वेयर',
     category: 'Amin / Land Surveyor',
-    isPhase1Active: true,
+    active: true,
     locationLabelEn: 'Select Block',
     locationLabelHi: 'प्रखंड चुनें',
     locationPlaceholderEn: 'Choose revenue block for land survey...',
@@ -40,7 +42,7 @@ export const PROFESSIONAL_TYPES: ProfessionalTypeOption[] = [
     name: 'Deed Writer',
     nameHi: 'दस्तावेज लेखक (कातिब)',
     category: 'Deed Writer',
-    isPhase1Active: true,
+    active: true,
     locationLabelEn: 'Select Sub-Registry Office',
     locationLabelHi: 'उप-पंजीकरण कार्यालय चुनें',
     locationPlaceholderEn: 'Choose registry office for deed drafting...',
@@ -50,10 +52,10 @@ export const PROFESSIONAL_TYPES: ProfessionalTypeOption[] = [
   },
   {
     id: 'lawyer',
-    name: 'Lawyer (Phase 2)',
-    nameHi: 'जमीन व संपत्ति वकील (फेज 2)',
+    name: 'Lawyer',
+    nameHi: 'जमीन व संपत्ति वकील',
     category: 'Lawyer',
-    isPhase1Active: false,
+    active: false,
     locationLabelEn: 'Select Court / Legal Location',
     locationLabelHi: 'न्यायालय / कानूनी स्थान चुनें',
     locationPlaceholderEn: 'Choose court or legal forum...',
@@ -63,10 +65,10 @@ export const PROFESSIONAL_TYPES: ProfessionalTypeOption[] = [
   },
   {
     id: 'notary',
-    name: 'Notary (Phase 2)',
-    nameHi: 'नोटरी पब्लिक (फेज 2)',
+    name: 'Notary',
+    nameHi: 'नोटरी पब्लिक',
     category: 'Notary',
-    isPhase1Active: false,
+    active: false,
     locationLabelEn: 'Select Notary Zone / Chamber',
     locationLabelHi: 'नोटरी क्षेत्र / चेंबर चुनें',
     locationPlaceholderEn: 'Choose notary chamber or zone...',
@@ -76,8 +78,37 @@ export const PROFESSIONAL_TYPES: ProfessionalTypeOption[] = [
   }
 ];
 
-export const PHASE1_ACTIVE_PROFESSIONAL_TYPES = PROFESSIONAL_TYPES.filter(p => p.isPhase1Active);
+/**
+ * Phase 1 Active Categories ONLY (Amin / Land Surveyor & Deed Writer)
+ * Strictly sorted alphabetically A → Z.
+ */
+export const PHASE_1_PROFESSIONAL_TYPES = PROFESSIONAL_TYPES.filter(p => p.active);
 
+export function getActiveProfessionalTypes(): ProfessionalTypeOption[] {
+  return [...PHASE_1_PROFESSIONAL_TYPES].sort((a, b) => 
+    a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
+  );
+}
+
+/**
+ * Helper to get strictly district-bound Sub-Registry Offices, sorted A → Z
+ */
+export function getSubRegistryOfficesForDistrict(districtName: string): string[] {
+  if (!districtName || districtName === 'All') return [];
+  const found = BIHAR_DISTRICTS.find(d => d.name.toLowerCase() === districtName.toLowerCase());
+  if (!found || !found.registryOffices) return [];
+  return [...found.registryOffices].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+}
+
+/**
+ * Helper to get strictly district-bound Blocks, sorted A → Z
+ */
+export function getBlocksForDistrict(districtName: string): string[] {
+  if (!districtName || districtName === 'All') return [];
+  const found = BIHAR_DISTRICTS.find(d => d.name.toLowerCase() === districtName.toLowerCase());
+  if (!found || !found.blocks) return [];
+  return [...found.blocks].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+}
 
 /**
  * Complete Bihar 38 Districts Database
